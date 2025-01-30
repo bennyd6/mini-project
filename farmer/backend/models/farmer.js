@@ -1,15 +1,14 @@
 const mongoose=require('mongoose')
 const { Schema } = mongoose;
 
-const userSchema = new Schema({
+const farmerSchema = new Schema({
   FirstName: String,
   LastName: String,
-  userName: String,
+  phone: String,
   password: String,
   email: String,
-  phone: String,
   date: { type: Date, default: Date.now }
 });
 
-const User=mongoose.model('user',userSchema)
-module.exports=User
+const Farmer=mongoose.model('farmer',farmerSchema)
+module.exports=Farmer

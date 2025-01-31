@@ -1,5 +1,5 @@
 const express=require('express')
-const Farmer=require('../models/farmer')
+const Farmer=require('../models/Farmer')
 const { body, validationResult } = require('express-validator');
 const bcrypt=require('bcryptjs')
 const jwt=require('jsonwebtoken')
@@ -70,40 +70,53 @@ router.post('/createfarmer',[
 
 
 //route-2: login a farmer /api/auth/login
-router.post('/login',[
-    body('phone')
-        .isMobilePhone('any', { strictMode: false })
-        .withMessage('Enter a valid phone number'),
+router.post('/login', [
+    body('phone').isMobilePhone('any').withMessage('Enter a valid phone number'),
     body('password', 'Password cannot be blank').exists(),
-],async (req,res)=>{
-    //if there are errors, return bad request and the errors
+], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    const {phone,password}=req.body
-    try{ 
-        let farmer=await Farmer.findOne({phone});
-        if(!farmer){
-            return res.status(400).json({error:"Please try to login with correct credentials"})
+
+    const { phone, password } = req.body;
+
+    try {
+        let farmer = await Farmer.findOne({ phone });
+
+        if (!farmer) {
+            console.log("Phone number not found:", phone);
+            return res.status(400).json({ error: "Invalid phone number or password" });
         }
-        const passwordCompare=await bcrypt.compare(password,farmer.password);
-        if(!passwordCompare){
-            return res.status(400).json({error:"Please try to login with correct credentials"})
+
+        // Debugging password comparison
+        console.log("Stored Hashed Password:", farmer.password);
+        console.log("Entered Password:", password);
+
+        const passwordCompare = await bcrypt.compare(password, farmer.password);
+
+        if (!passwordCompare) {
+            console.log("Password does not match!");
+            return res.status(400).json({ error: "Invalid phone number or password" });
         }
-        const data={
-            farmer:{
-                id:farmer.id
+
+        const data = {
+            farmer: {
+                id: farmer.id
             }
-        }
-        const authtoken=jwt.sign(data,JWT_SECRET)
-        console.log(authtoken);
-        res.json({authtoken})
-    }catch(error){
-        console.error(error.message)
-        res.status(500).send("Internal Server Error")
+        };
+
+        const authtoken = jwt.sign(data, JWT_SECRET);
+        console.log("Generated Auth Token:", authtoken);
+        res.json({ authtoken });
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal Server Error");
     }
-})
+});
+
+
 
 
 // route-3 Get loggedin farmer details using: POST '/api/auth/getfarmer'

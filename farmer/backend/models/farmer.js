@@ -1,14 +1,12 @@
-const mongoose=require('mongoose')
-const { Schema } = mongoose;
+const mongoose = require('mongoose');
 
-const farmerSchema = new Schema({
-  FirstName: String,
-  LastName: String,
-  phone: String,
-  password: String,
-  email: String,
-  date: { type: Date, default: Date.now }
-});
+const FarmerSchema = new mongoose.Schema({
+    FirstName: { type: String, required: true },
+    LastName: { type: String, required: true },
+    phone: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    date: { type: Date, default: Date.now }
+}, { versionKey: false }); // This removes "__v"
 
-const Farmer=mongoose.model('farmer',farmerSchema)
-module.exports=Farmer
+module.exports = mongoose.model('Farmer', FarmerSchema);

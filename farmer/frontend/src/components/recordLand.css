@@ -1,0 +1,13 @@
+/* .rl-main{
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(247, 247, 247);
+} */
+
+.rl-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f4f4f9;
+}

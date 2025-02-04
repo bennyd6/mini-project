@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/login';
 import Signup from './components/signup';
 import Home from './components/home';
-import './app.css'
+import './App.css'
 import RecordLand from './components/recordLand';
 
 function App() {

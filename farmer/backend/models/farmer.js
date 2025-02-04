@@ -6,7 +6,8 @@ const FarmerSchema = new mongoose.Schema({
     phone: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    coordinates: [{ latitude: Number, longitude: Number }], 
     date: { type: Date, default: Date.now }
-}, { versionKey: false }); // This removes "__v"
+}, { versionKey: false });
 
 module.exports = mongoose.model('Farmer', FarmerSchema);

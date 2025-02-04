@@ -3,7 +3,7 @@ const Farmer=require('../models/Farmer')
 const { body, validationResult } = require('express-validator');
 const bcrypt=require('bcryptjs')
 const jwt=require('jsonwebtoken')
-// const fetchfarmer=require('../middleware/fetchfarmer')
+const fetchfarmer=require('../middleware/fetchfarmer')
 
 const JWT_SECRET='Bennyi$ag00dguy'
 
@@ -11,7 +11,7 @@ const JWT_SECRET='Bennyi$ag00dguy'
 const router=express.Router();
 
 
-//route-1: create a new farmer /pi/auth/createfarmer
+//route-1: create a new farmer /api/auth/createfarmer
 router.post('/createfarmer',[
     body('FirstName','Enter a valid first name').isLength({ min: 4 }),
     body('LastName','Enter a valid Last name').isLength({ min: 4 }),
@@ -120,16 +120,52 @@ router.post('/login', [
 
 
 // route-3 Get loggedin farmer details using: POST '/api/auth/getfarmer'
-// router.post('/getfarmer',fetchfarmer,async (req,res)=>{
-//     try {
-//         farmerId=req.farmer.id;
-//         const farmer=await Farmer.findById(farmerId).select("-password")
-//         res.send(farmer)
-//     } catch (error) {
-//         console.error(error.message)
-//         res.status(500).send("Internal Server Error")
-//     }
-// })
+router.post('/getfarmer',fetchfarmer,async (req,res)=>{
+    try {
+        farmerId=req.farmer.id;
+        const farmer=await Farmer.findById(farmerId).select("-password")
+        res.send(farmer)
+    } catch (error) {
+        console.error(error.message)
+        res.status(500).send("Internal Server Error")
+    }
+})
+
+
+// route-4: Update coordinates of the farmer /api/auth/recordcoordinates
+router.post('/recordcoordinates', fetchfarmer, async (req, res) => {
+    const { coordinates } = req.body;
+
+    if (!coordinates || !Array.isArray(coordinates)) {
+        return res.status(400).json({ error: "Invalid input. Coordinates should be an array of objects." });
+    }
+
+    for (let i = 0; i < coordinates.length; i++) {
+        const { latitude, longitude } = coordinates[i];
+        if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+            return res.status(400).json({ error: `Invalid coordinate at index ${i}. Each coordinate should have valid latitude and longitude.` });
+        }
+    }
+
+    try {
+        let farmer = await Farmer.findById(req.farmer.id);
+
+        if (!farmer) {
+            return res.status(404).json({ error: "Farmer not found" });
+        }
+
+        farmer.coordinates = coordinates;
+
+        await farmer.save();
+
+        res.json({ message: "Coordinates updated successfully", coordinates: farmer.coordinates });
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 
 
 module.exports=router

@@ -1,18 +1,23 @@
-import './App.css'
-import Login from './components/login'
-import Signup from './components/signup'
-import Home from './components/home'
-import RecordLand from './components/recordLand'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './components/login';
+import Signup from './components/signup';
+import Home from './components/home';
+import './app.css'
+import RecordLand from './components/recordLand';
 
 function App() {
   return (
     <>
-      {/* <Login></Login> */}
-      {/* <Signup></Signup> */}
-      {/* <Home></Home> */}
-      <RecordLand></RecordLand>
+    <Router>
+       <Routes>
+         <Route path="/" element={<Home />} />
+         <Route path="/login" element={<Login />} />
+         <Route path="/signup" element={<Signup />} />
+         <Route path="/record-land" element={<RecordLand />} />
+        </Routes>
+   </Router>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
